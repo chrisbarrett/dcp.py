@@ -13,6 +13,11 @@ from   interactive import read_choice, read_number, read_y_or_n
 from   subprocess  import CalledProcessError
 
 
+# Use this module's docstring as the program description.
+DESCRIPTION = sys.modules[__name__].__doc__
+VERSION = 0.1
+EPILOGUE = 'Requires external programs for drive formatting. Tested on Debian.'
+
 def read_dcp_size (capacity, default):
     """Read the size of the DCP partition from the user.
 
@@ -38,6 +43,40 @@ def read_dcp_size (capacity, default):
 def main ():
     """Program entrypoint.
     """
+    #### Parse program arguments.
+
+    parser = argparse.ArgumentParser(
+        description=DESCRIPTION,
+        epilog=EPILOGUE,
+        add_help=False)
+
+    group = parser.add_argument_group('formatting options')
+
+    group.add_argument(
+        '-d', '--drive',
+        help='the absolute path to the drive to format')
+
+    group.add_argument(
+        '-s', '--dcp_size',
+        type=float,
+        metavar='GB',
+        help='the size of the DCP partition in gigabytes')
+
+    group = parser.add_argument_group('help')
+    group.add_argument(
+        '-h', '--help',
+        action='help',
+        help='show usage')
+
+    group.add_argument(
+        '-v', '--version',
+        action='version',
+        version=VERSION,
+        help='show version')
+
+
+    args = parser.parse_args()
+
     # Select the drive to format.
     drives = attached_drives()
     drive = reversed(drives)[0]
