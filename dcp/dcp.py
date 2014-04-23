@@ -3,18 +3,20 @@
 """
 
 import argparse
-import bytesize
 import sys
-from   drive       import attached_drives, drive_size, unmount
-from   drive       import partition, dcp_init, ntfs_init
-from   interactive import read_choice, read_number, read_y_or_n
 from   subprocess  import CalledProcessError
+
+import dcp.bytesize as bytesize
+from   dcp.drive       import attached_drives, drive_size, unmount
+from   dcp.drive       import partition, dcp_init, ntfs_init
+from   dcp.interactive import read_choice, read_number, read_y_or_n
 
 
 # Use this module's docstring as the program description.
 DESCRIPTION = sys.modules[__name__].__doc__
 VERSION = 0.1
 EPILOGUE = 'Requires external programs for drive formatting. Tested on Debian.'
+
 
 def read_dcp_size (capacity, default):
     """Read the size of the DCP partition from the user.

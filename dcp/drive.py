@@ -1,9 +1,10 @@
 """Commands for working with attached drives.
 """
 
-import bytesize
 import os
 from   subprocess import check_call, call, getoutput
+
+import dcp.bytesize as bytesize
 
 
 def attached_drives ():
