@@ -11,17 +11,33 @@ class ByteSize (object):
         self.megabytes = self.kilobytes / 1024.0
         self.gigabytes = self.megabytes / 1024.0
 
-    def __add__(self, other):
+    def __add__ (self, other):
         return ByteSize(self.bytes + other.bytes)
 
-    def __sub__(self, other):
+    def __sub__ (self, other):
         return ByteSize(self.bytes - other.bytes)
 
-    def __mul__(self, other):
+    def __mul__ (self, other):
         return ByteSize(self.bytes * other.bytes)
 
-    def __eq__(self, other):
+    def __eq__ (self, other):
         return self.bytes == other.bytes
+
+    def __ne__ (self, other):
+        return not self.bytes == other.bytes
+
+    def __lt__ (self, other):
+        return self.bytes < other.bytes
+
+    def __le__ (self, other):
+        return self.bytes <= other.bytes
+
+    def __gt__ (self, other):
+        return self.bytes > other.bytes
+
+    def __ge__ (self, other):
+        return self.bytes >= other.bytes
+
 
 
 def from_b (n_b):
