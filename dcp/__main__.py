@@ -33,7 +33,7 @@ def read_dcp_size (capacity, default):
     if size >= capacity:
         print('Invalid partition size. ' +
               'Must be less than drive capacity ({} GB).'.format(
-                  default.gigabytes))
+                  round(default.gigabytes, 2)))
 
         return read_dcp_size(capacity, default)
     else:
