@@ -61,6 +61,9 @@ def mount (volume, mountpoint, fs_type=None):
     volume -- the device to mount
     mountpoint -- the path to mount the device at.
     fs_type -- the optional filesystem type (e.g. ext2, ntfs)
+
+    Raises:
+    CalledProcessError on failure.
     """
     os.makedirs(mountpoint, exist_ok=True)
     mount_type = ['-t', fs_type] if fs_type else []
@@ -75,11 +78,13 @@ def unmount (volume):
 
 def partition (drive, capacity, partition_pos):
     """Destructively partition the given drive for DCP.
-    Raises CalledProcessError on failure.
 
     drive -- the name of the storage device to partition.
-    capacity -- a ByteSize representing the total capacity of the driv..
+    capacity -- a ByteSize representing the total capacity of the drive.
     partition_point -- a ByteSize at which the second partition starts.
+
+    Raises:
+    CalledProcessError on failure.
     """
     check_call(['parted', drive, '-s mklabel msdos'])
 
@@ -94,10 +99,12 @@ def partition (drive, capacity, partition_pos):
 
 def dcp_init (volume, label):
     """Initialise the given volume with an EXT2 filesystem.
-    Raises CalledProcessError on failure.
 
     volume -- The drive partition to format.
     label -- The name to give to the partition.
+
+    Raises:
+    CalledProcessError on failure.
     """
     check_call(['mkfs.ext2', '-j', '-l', label, '-I 128', volume])
     mountpoint = '/dev/' + label
@@ -107,10 +114,12 @@ def dcp_init (volume, label):
 
 def ntfs_init (volume, label):
     """Initialise the given volume with an NTFS filesystem.
-    Raises CalledProcessError on failure.
 
     volume -- The drive partition to format.
     label -- The name to give to the partition.
+
+    Raises:
+    CalledProcessError on failure.
     """
     check_call(['mkntfs', '-fl', label, volume])
     mountpoint = '/dev/' + label
