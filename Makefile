@@ -10,7 +10,8 @@ env :
 # Install editor tooling.
 .PHONY: tooling
 tooling : env
-	$(PIP) install jedi
 	$(PIP) install epc
 	$(PIP) install pylint
-	$(PIP) install pymacs
+	$(PIP) install rope_py3k
+	$(PIP) install ropemode
+	$(PIP) install ropemacs
