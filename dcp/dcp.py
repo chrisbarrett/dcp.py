@@ -15,7 +15,7 @@ from   dcp.interactive import read_choice, read_number, read_y_or_n
 # Use this module's docstring as the program description.
 DESCRIPTION = sys.modules[__name__].__doc__
 VERSION = 0.1
-EPILOGUE = 'Requires external programs for drive formatting. Tested on Debian.'
+EPILOGUE = 'Requires external programs for drive formatting.'
 
 
 def read_dcp_size (capacity, default):
