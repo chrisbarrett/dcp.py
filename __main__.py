@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """Format a drive for use as a Digital Cinema Package.
-
-Requires external programs for EXT-formatting. Tested on Debian.
-
-(c) Chris Barrett 2014
 """
 
+import argparse
 import bytesize
+import sys
 from   drive       import attached_drives, drive_size, unmount
 from   drive       import partition, dcp_init, ntfs_init
 from   interactive import read_choice, read_number, read_y_or_n
@@ -29,7 +27,7 @@ def read_dcp_size (capacity, default):
     """
     gigs = round(default.gigabytes, 2)
     size = read_number('DCP partition size (GB)', gigs)
-    size = bytesize.from_gb(size)
+    size = bytesize.from_gb(int(size))
     if size >= capacity:
         print('Invalid partition size. ' +
               'Must be less than drive capacity ({} GB).'.format(
@@ -43,6 +41,7 @@ def read_dcp_size (capacity, default):
 def main ():
     """Program entrypoint.
     """
+
     #### Parse program arguments.
 
     parser = argparse.ArgumentParser(
@@ -77,20 +76,39 @@ def main ():
 
     args = parser.parse_args()
 
+
+    #### Interactively read arguments that were not supplied.
+
+
     # Select the drive to format.
+
     drives = attached_drives()
-    drive = reversed(drives)[0]
-    drive = read_choice('Select drive to format', drives, default=drive)
-    capacity = drive_size(drive)
+
+    if not args.drive:
+        default_drive = next(reversed(drives))
+        args.drive = read_choice(
+            'Select drive to format', drives, default=default_drive)
+    elif not args.drive in drives:
+        exit('Error: Invalid drive path ({})'.format(args.drive))
+
+
+    capacity = drive_size(args.drive)
 
     # Set the size of the DCP partition.
-    dcp_size = capacity - bytesize.from_mb(600)
-    dcp_size = read_dcp_size(capacity, default=dcp_size)
+
+    if not args.dcp_size:
+        default_size = capacity - bytesize.from_mb(600)
+        args.dcp_size = read_dcp_size(capacity, default=default_size)
+    else:
+        args.dcp_size = bytesize.from_gb(args.dcp_size)
 
     # Infer the size of the NTFS partition.
-    ntfs_size = capacity - dcp_size
+    args.ntfs_size = capacity - args.dcp_size
 
-    # Summarise options.
+
+    #### Summarise options.
+
+
     print ('''
     Summary
     -------
@@ -98,43 +116,45 @@ def main ():
     Drive capacity\t{cap} GB
     DCP partition size\t{dcp_sz} GB
     NTFS partition size\t{ntfs_sz} GB
-    '''.format(dr=drive,
-               cap=capacity.gigabytes,
-               dcp_sz=dcp_size.gigabytes,
-               ntfs_sz=ntfs_size.gigabytes))
+    '''.format(dr=args.drive,
+               cap=round(capacity.gigabytes, 2),
+               dcp_sz=round(args.dcp_size.gigabytes, 2),
+               ntfs_sz=round(args.ntfs_size.gigabytes, 2)))
 
     if not read_y_or_n('The drive will be erased. Continue?'):
         exit('Aborted')
 
-    # Initialise drive.
+
+    #### Initialise drive.
+
 
     print('--> Unmounting drive...')
-    unmount(drive)
+    unmount(args.drive)
 
     print('--> Partitioning...')
     try:
-        partition(drive, dcp_size, ntfs_size)
+        partition(args.drive, args.dcp_size, args.ntfs_size)
     except CalledProcessError:
         exit('Error: partitioning failed')
 
     print('--> Initialising DCP partition...')
     try:
-        dcp_init('DCP', drive)
+        dcp_init('DCP', args.drive)
     except CalledProcessError:
         exit('Error: DCP initialisation failed')
 
     print('--> Initialising NTFS partition...')
     try:
-        ntfs_init('NTFS', drive)
+        ntfs_init('NTFS', args.drive)
     except CalledProcessError:
         exit('Error: NTFS initialisation failed')
 
     print('--> Unmounting drive...')
-    unmount(drive)
+    unmount(args.drive)
 
     print('--> Finished')
     return 0
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
