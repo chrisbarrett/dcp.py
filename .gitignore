@@ -1,5 +1,7 @@
 __pycache__/
-/.ropeproject/
+.ropeproject/
 /env/
 /test/
 /build/
+/dist/
+*.egg-info/

@@ -1,7 +1,7 @@
 PYTHON_BIN = /usr/local/bin/python3.3
 PIP        = ./env/bin/pip
 
-all : env
+all : env build
 
 # Configure virtualenv for this project.
 env :
@@ -15,3 +15,11 @@ tooling : env
 	$(PIP) install rope_py3k
 	$(PIP) install ropemode
 	$(PIP) install ropemacs
+
+.PHONY: build
+build :
+	python setup.py build
+
+.PHONY: install
+install :
+	python setup.py install

@@ -5,8 +5,9 @@
 import argparse
 import sys
 from   subprocess  import CalledProcessError
-
 import dcp.bytesize as bytesize
+
+from   dcp.__init__    import __version__
 from   dcp.drive       import attached_drives, drive_size, unmount
 from   dcp.drive       import partition, dcp_init, ntfs_init
 from   dcp.interactive import read_choice, read_number, read_y_or_n
@@ -14,7 +15,6 @@ from   dcp.interactive import read_choice, read_number, read_y_or_n
 
 # Use this module's docstring as the program description.
 DESCRIPTION = sys.modules[__name__].__doc__
-VERSION = 0.1
 EPILOGUE = 'Requires external programs for drive formatting.'
 
 
@@ -72,7 +72,7 @@ def main ():
     group.add_argument(
         '-v', '--version',
         action='version',
-        version=VERSION,
+        version=__version__,
         help='show version')
 
 
