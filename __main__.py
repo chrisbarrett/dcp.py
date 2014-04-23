@@ -22,7 +22,8 @@ def read_dcp_size (capacity, default):
     Returns:
     The size of the DCP partition as a ByteSize.
     """
-    size = read_number('DCP partition size (GB)', default.gigabytes)
+    gigs = round(default.gigabytes, 2)
+    size = read_number('DCP partition size (GB)', gigs)
     size = bytesize.from_gb(size)
     if size >= capacity:
         print('Invalid partition size. ' +
