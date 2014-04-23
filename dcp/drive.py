@@ -78,7 +78,7 @@ def dcp_init (volume, label):
     Raises:
     CalledProcessError on failure.
     """
-    check_call(['mkfs.ext2', '-j', '-l', label, '-I 128', volume])
+    check_call(['mkfs', '-t ext2', '-j', '-l', label, '-I 128', volume])
     mountpoint = '/dev/' + label
     mount(volume, mountpoint)
     check_call(['chmod', '-R 777', mountpoint])
@@ -93,7 +93,7 @@ def ntfs_init (volume, label):
     Raises:
     CalledProcessError on failure.
     """
-    check_call(['mkntfs', '-fl', label, volume])
+    check_call(['mkfs', '-t ntfs', '-f', '-l', label, volume])
     mountpoint = '/dev/' + label
     mount(volume, mountpoint)
     check_call(['chmod', '-R 755', mountpoint])
