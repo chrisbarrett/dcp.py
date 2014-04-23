@@ -8,5 +8,5 @@ setup(
     author_email = "chris.d.barrett@me.com",
     description = "Format a drive for use as a Digital Cinema Package.",
     license = "BSD3",
-    entry_points = {'console_scripts': ['dcp = dcp.__main__:main',]}
+    entry_points = {'console_scripts': ['dcp = dcp.dcp:main',]}
 )
