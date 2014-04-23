@@ -1,0 +1,13 @@
+#+TITLE: INSTALL
+#+AUTHOR: Chris Barrett
+#+OPTIONS: toc:nil author:nil
+
+* Requirements
+This tool requires utilities from the following Debian packages:
+- parted
+- ntfsprogs
+* Installation
+Install using [[https://pypi.python.org/pypi/setuptools][setuptools]].
+#+begin_src sh
+python setup.py install
+#+end_src

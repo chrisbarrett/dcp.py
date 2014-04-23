@@ -1,0 +1,27 @@
+                               _________
+
+                                INSTALL
+                               _________
+
+
+
+
+
+1 Requirements
+==============
+
+  This tool requires utilities from the following Debian packages:
+  - parted
+  - ntfsprogs
+
+
+2 Installation
+==============
+
+  Install using [setuptools].
+  ,----
+  | python setup.py install |
+  `----
+
+
+  [setuptools] https://pypi.python.org/pypi/setuptools
