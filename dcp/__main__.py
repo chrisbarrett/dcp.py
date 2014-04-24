@@ -122,6 +122,12 @@ def main ():
         metavar='GB',
         help='the size of the DCP partition in gigabytes')
 
+    group.add_argument(
+        '-y', '--no-confirm',
+        default=False,
+        action='store_true',
+        help='skip confirmation dialogs')
+
     group = parser.add_argument_group('help')
 
     group.add_argument(
@@ -153,7 +159,12 @@ The drive will be repartitioned as follows:
 
     '''.format(args.drive, args.capacity, args.dcp_size, args.ntfs_size))
 
-    if not read_y_or_n('The drive will be erased. Continue?'):
+    # Prompt before continuing.
+
+    accepted = args.no_confirm or read_y_or_n(
+        'The drive will be erased. Continue?')
+
+    if not accepted:
         exit('\nNo changes made.')
 
     # Initialise drive.
