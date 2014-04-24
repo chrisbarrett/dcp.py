@@ -44,7 +44,7 @@ def read_choice (prompt, choices, default=None):
     elif line in [str(c) for c in choices]:
         return line
     else:
-        print('Invalid choice.')
+        print('Invalid choice')
         return read_choice(prompt, choices, default)
 
 

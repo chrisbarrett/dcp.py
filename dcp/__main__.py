@@ -32,8 +32,8 @@ def read_dcp_size (capacity, default):
     size = bytesize.from_gb(int(size))
     if size >= capacity:
         print('Invalid partition size. ' +
-              'Must be less than drive capacity ({} GB).'.format(
-                  round(default.gigabytes, 2)))
+              'Must be less than drive capacity ({:g2} GB).'.format(
+                  default.gigabytes))
 
         return read_dcp_size(capacity, default)
     else:
@@ -47,8 +47,8 @@ def print_drive_list (drives):
     """
     lines = []
     for drive in drives:
-        size = drive_size(drive).gigabytes
-        line = '{drive}\t {size} GB'.format(drive=drive, size=round(size, 2))
+        size = drive_size(drive)
+        line = '{}\t {.gigabytes:>8.2f} GB'.format(drive, size)
         lines.append(line)
 
     print('''
@@ -134,18 +134,15 @@ def main ():
 
 The drive will be repartitioned as follows:
 
-{dr}\t\t{cap} GB
+{}\t\t{.gigabytes:>8.2f} GB
  |
- |-- 1: DCP \t ext2 \t{dcp_sz} GB
- `-- 2: NTFS\t ntfs\t{ntfs_sz} GB
+ |-- 1: DCP \t ext2 \t{.gigabytes:>8.2f} GB
+ `-- 2: NTFS\t ntfs \t{.gigabytes:>8.2f} GB
 
-    '''.format(dr=args.drive,
-               cap=round(capacity.gigabytes, 2),
-               dcp_sz=round(args.dcp_size.gigabytes, 2),
-               ntfs_sz=round(args.ntfs_size.gigabytes, 2)))
+    '''.format(args.drive, capacity, args.dcp_size, args.ntfs_size))
 
     if not read_y_or_n('The drive will be erased. Continue?'):
-        exit('Aborted')
+        exit('No changes made')
 
 
     #### Initialise drive.
