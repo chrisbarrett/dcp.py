@@ -58,11 +58,52 @@ Available drives:
     '''.format('\n'.join(lines)))
 
 
+def process_args (args):
+    """Process program args. Interactively read any args that were not supplied.
+
+    args -- The arguments object output by argparse.
+
+    Returns:
+    The modified args object.
+    """
+    # Select the drive to format.
+    #
+    # As a basic sanity check, only offer to format drives that have a capacity
+    # of 10 GB or greater. This should exclude CDs, DVDs etc.
+
+    drives = [drive for drive in attached_drives()
+              if drive_size(drive) >= bytesize.from_gb(10)]
+
+    if not args.drive:
+        print_drive_list(drives)
+        default_drive = next(reversed(drives))
+        args.drive = read_choice(
+            'Select drive to format', drives, default=default_drive)
+    elif not args.drive in drives:
+        exit('Error: Invalid drive path ({})'.format(args.drive))
+
+
+    args.capacity = drive_size(args.drive)
+
+    # Set the size of the DCP partition.
+
+    if not args.dcp_size:
+        default_size = args.capacity - bytesize.from_mb(600)
+        args.dcp_size = read_dcp_size(args.capacity, default=default_size)
+    else:
+        args.dcp_size = bytesize.from_gb(args.dcp_size)
+
+    # Infer the size of the NTFS partition.
+    args.ntfs_size = args.capacity - args.dcp_size
+
+    return args
+
+
 def main ():
     """Program entrypoint.
     """
 
-    #### Parse program arguments.
+    # Parse program arguments.
 
     parser = argparse.ArgumentParser(
         description=DESCRIPTION,
@@ -82,6 +123,7 @@ def main ():
         help='the size of the DCP partition in gigabytes')
 
     group = parser.add_argument_group('help')
+
     group.add_argument(
         '-h', '--help',
         action='help',
@@ -93,45 +135,13 @@ def main ():
         version=__version__,
         help='show version')
 
+    try:
+        args = parser.parse_args()
+        args = process_args(args)
+    except KeyboardInterrupt:
+        exit('\nNo changes made.')
 
-    args = parser.parse_args()
-
-
-    #### Interactively read arguments that were not supplied.
-
-    # Select the drive to format.
-    #
-    # As a basic sanity check, only offer to format drives that have a capacity
-    # of 10 GB or greater. This should exclude CDs, DVDs etc.
-
-    drives = [drive for drive in attached_drives()
-              if drive_size(drive) >= bytesize.from_gb(10)]
-
-    if not args.drive:
-        print_drive_list(drives)
-        default_drive = next(reversed(drives))
-        args.drive = read_choice(
-            'Select drive to format', drives, default=default_drive)
-    elif not args.drive in drives:
-        exit('Error: Invalid drive path ({})'.format(args.drive))
-
-
-    capacity = drive_size(args.drive)
-
-    # Set the size of the DCP partition.
-
-    if not args.dcp_size:
-        default_size = capacity - bytesize.from_mb(600)
-        args.dcp_size = read_dcp_size(capacity, default=default_size)
-    else:
-        args.dcp_size = bytesize.from_gb(args.dcp_size)
-
-    # Infer the size of the NTFS partition.
-    args.ntfs_size = capacity - args.dcp_size
-
-
-    #### Summarise options.
-
+    # Summarise options.
 
     print ('''
 
@@ -142,14 +152,12 @@ The drive will be repartitioned as follows:
  |-- 1: DCP \t ext2 \t{.gigabytes:>8.2f} GB
  `-- 2: NTFS\t ntfs \t{.gigabytes:>8.2f} GB
 
-    '''.format(args.drive, capacity, args.dcp_size, args.ntfs_size))
+    '''.format(args.drive, args.capacity, args.dcp_size, args.ntfs_size))
 
     if not read_y_or_n('The drive will be erased. Continue?'):
-        exit('No changes made')
+        exit('\nNo changes made.')
 
-
-    #### Initialise drive.
-
+    # Initialise drive.
 
     print('--> Unmounting drive...')
     unmount(args.drive)
@@ -158,19 +166,19 @@ The drive will be repartitioned as follows:
     try:
         partition(args.drive, args.dcp_size, args.ntfs_size)
     except CalledProcessError:
-        exit('Error: partitioning failed')
+        exit('\nError: partitioning failed')
 
     print('--> Initialising DCP partition...')
     try:
         dcp_init('DCP', args.drive)
     except CalledProcessError:
-        exit('Error: DCP initialisation failed')
+        exit('\nError: DCP initialisation failed')
 
     print('--> Initialising NTFS partition...')
     try:
         ntfs_init('NTFS', args.drive)
     except CalledProcessError:
-        exit('Error: NTFS initialisation failed')
+        exit('\nError: NTFS initialisation failed')
 
     print('--> Unmounting drive...')
     unmount(args.drive)
