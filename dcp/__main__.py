@@ -52,10 +52,10 @@ def print_drive_list (drives):
         lines.append(line)
 
     print('''
-    Available drives
-    ----------------
-    {}
-    '''.format('\n    '.join(lines)))
+Available drives:
+--------------------------------
+{}
+    '''.format('\n'.join(lines)))
 
 
 def main ():
@@ -131,12 +131,14 @@ def main ():
 
 
     print ('''
-    Summary
-    -------
-    Drive device\t{dr}
-    Drive capacity\t{cap} GB
-    DCP partition size\t{dcp_sz} GB
-    NTFS partition size\t{ntfs_sz} GB
+
+The drive will be repartitioned as follows:
+
+{dr}\t\t{cap} GB
+ |
+ |-- 1: DCP \t ext2 \t{dcp_sz} GB
+ `-- 2: NTFS\t ntfs\t{ntfs_sz} GB
+
     '''.format(dr=args.drive,
                cap=round(capacity.gigabytes, 2),
                dcp_sz=round(args.dcp_size.gigabytes, 2),
