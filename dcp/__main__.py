@@ -40,6 +40,24 @@ def read_dcp_size (capacity, default):
         return size
 
 
+def print_drive_list (drives):
+    """Print a list of available drives for formatting.
+
+    drives -- is the list of drives to print.
+    """
+    lines = []
+    for drive in drives:
+        size = drive_size(drive).gigabytes
+        line = '{drive}\t {size} GB'.format(drive=drive, size=round(size, 2))
+        lines.append(line)
+
+    print('''
+    Available drives
+    ----------------
+    {}
+    '''.format('\n    '.join(lines)))
+
+
 def main ():
     """Program entrypoint.
     """
@@ -87,6 +105,7 @@ def main ():
     drives = attached_drives()
 
     if not args.drive:
+        print_drive_list(drives)
         default_drive = next(reversed(drives))
         args.drive = read_choice(
             'Select drive to format', drives, default=default_drive)
