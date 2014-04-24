@@ -144,7 +144,6 @@ def main ():
     # Summarise options.
 
     print ('''
-
 The drive will be repartitioned as follows:
 
 {}\t\t{.gigabytes:>8.2f} GB
