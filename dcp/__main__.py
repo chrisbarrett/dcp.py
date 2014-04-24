@@ -99,10 +99,13 @@ def main ():
 
     #### Interactively read arguments that were not supplied.
 
-
     # Select the drive to format.
+    #
+    # As a basic sanity check, only offer to format drives that have a capacity
+    # of 10 GB or greater. This should exclude CDs, DVDs etc.
 
-    drives = attached_drives()
+    drives = [drive for drive in attached_drives()
+              if drive_size(drive) >= bytesize.from_gb(10)]
 
     if not args.drive:
         print_drive_list(drives)
